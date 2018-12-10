@@ -1,0 +1,16 @@
+{
+    "name": "scheduler-bot",
+    "version": "1.0.0",
+    "description": "A bot that posts a When2Meet for our weekly DnD sessions",
+    "main": "bot.js",
+    "author": "Kathy Li",
+    "dependencies": {
+        "cron": "^1.6.0",
+        "discord.js": "^11.4.2",
+        "request": "^2.88.0"
+    },
+    "devDependencies": {
+        "babel-preset-env": "^1.7.0",
+        "babel-register": "^6.26.0"
+    }
+}
