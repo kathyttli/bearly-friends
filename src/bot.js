@@ -12,7 +12,7 @@ function postPoll(pollUrl) {
      * received from Discord
      */
     client.on('ready', () => {
-        console.log('Bearly Friends is ready to rumble!');
+        console.log('I\'m bear-y excited to do bot things!');
     });
 
     client.login(token)
