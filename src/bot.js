@@ -18,7 +18,7 @@ function postPoll(pollUrl) {
     client.login(token)
         .then(() => {
             const channel = client.channels.get(dndChannelId);
-            channel.send(`Hi <@&${dndRoleId}>! Please fill out the When2Meet at ${pollUrl} for next weekend's session by Thursday. I can **bear**ly wait!`);
+            channel.send(`Test message: Hi <@&${dndRoleId}>! Please fill out the When2Meet at ${pollUrl} for next weekend's session by Thursday. I can **bear**ly wait!`);
         })
         .catch(error => console.log(error))
         .finally(() => client.destroy()); // Logout and clean up client resources
