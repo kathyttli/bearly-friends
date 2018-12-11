@@ -1,5 +1,6 @@
 const dndChannelId = '416666229428715540';
-const when2meetUrl = 'https://www.when2meet.com';
+const dndRoleId = '448866004840218626';
+const schedulingServiceUrl = 'https://www.when2meet.com';
 const createEventEndpoint = 'SaveNewEvent.php';
 
-export { dndChannelId };
+export { dndChannelId, dndRoleId, schedulingServiceUrl, createEventEndpoint };

@@ -1,27 +1,11 @@
 import { Client } from 'discord.js';
 import { CronJob } from 'cron';
 import { token } from '../auth.json';
-import { dndChannelId } from './constants';
+import { dndChannelId, dndRoleId, schedulingServiceUrl, createEventEndpoint } from './constants';
+import { getNextDate } from './utils';
 import request from 'request';
 
-function createPoll() {
-    var options = {
-        method: 'POST',
-        url: 'https://www.when2meet.com/SaveNewEvent.php',
-        headers: {
-            'Content-Type': 'text/html',
-            'Cache-Control': 'no-cache'
-        },
-        body: 'NewEventName=DnD&DateTypes=SpecificDates&PossibleDates=2018-12-21%7C2018-12-22%7C2018-12-23&NoEarlierThan=9&NoLaterThan=0&TimeZone=America%2FNew_York'
-    };
-
-    request(options, function (error, response, body) {
-        console.log(error);
-        console.log(body);
-    });
-}
-
-function postPoll() {
+function postPoll(pollUrl) {
     const client = new Client();
     /**
      * The ready event is vital, it means that only _after_ this will your bot start reacting to information
@@ -33,12 +17,37 @@ function postPoll() {
 
     client.login(token)
         .then(() => {
-            client.channels.get(dndChannelId);
+            const channel = client.channels.get(dndChannelId);
+            channel.send(`Hi <@&${dndRoleId}>! Please fill out the When2Meet at ${pollUrl} for next weekend's session by Thursday. I can **bear**ly wait!`);
         })
-        .then(() => client.destroy())
-        .catch(error => console.log(error));
+        .catch(error => console.log(error))
+        .finally(() => client.destroy()); // Logout and clean up client resources
 }
 
-createPoll();
-postPoll();
-// new CronJob('0 0 * * 1', postSchedule, null, true, 'America/New_York');
+function createPoll() {
+    const options = {
+        method: 'POST',
+        url: `${schedulingServiceUrl}/${createEventEndpoint}`,
+        headers: { 'content-type': 'multipart/form-data' },
+        formData: {
+            NewEventName: 'DnD',
+            DateTypes: 'SpecificDates',
+            PossibleDates: `${getNextDate(5)}|${getNextDate(6)}|${getNextDate(0)}`,
+            NoEarlierThan: '9',
+            NoLaterThan: '0',
+            TimeZone: 'America/New_York'
+        }
+    };
+
+    request(options, (error, response, body) => {
+        if (error) {
+            console.log(error);
+            return;
+        }
+        const pattern = /window\.location='.+'/g;
+        const path = pattern.exec(body)[0].split('\'')[1];
+        postPoll(`${schedulingServiceUrl}${path}`);
+    });
+}
+
+new CronJob('0 0 * * 1', createPoll, null, true, 'America/New_York');
